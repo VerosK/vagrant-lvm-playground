@@ -1,3 +1,6 @@
 [submodule "modules/lvm"]
 	path = modules/lvm
 	url = https://github.com/puppetlabs/puppetlabs-lvm
+[submodule "modules/stdlib"]
+	path = modules/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib

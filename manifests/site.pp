@@ -1,18 +1,41 @@
 
 notify{"Started on  ${fqdn}": }
 
-physical_volume { '/dev/disk/by-id/scsi-SATA_VIRTUAL_second':
-  ensure => present,
+# install XFS programsfac
+package{'xfsprogs':
+  ensure => present
 }
 
-volume_group { "second":
-  ensure           => present,
-  physical_volumes => '/dev/disk/by-id/scsi-SATA_VIRTUAL_second',
+# create mountpoints
+file{'/srv/test1':
+  ensure => 'directory'
+}
+file{'/srv/test2':
+  ensure => 'directory'
 }
 
 
-logical_volume {"test_volume":
-  ensure       => present,
-  volume_group => 'second',
-  size         => '512M',
-}
+class {'lvm':
+    volume_groups => {
+      'second' => {
+        physical_volumes => ['/dev/disk/by-id/scsi-SATA_VIRTUAL_second'],
+        logical_volumes => {
+          'test1' => {
+            size => '128M',
+            fs_type => 'xfs',
+            mountpath => '/srv/test1',
+            mountpath_require => true,
+
+          },
+          'test2' => {
+            size => '128M',
+            fs_type => 'ext3',
+            mountpath => '/srv/test2',
+            mountpath_require => false,
+          },
+        }
+      }
+    },
+
+    require => Package['xfsprogs']
+  }
